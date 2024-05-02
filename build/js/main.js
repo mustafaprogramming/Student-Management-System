@@ -7,13 +7,13 @@ console.log(chalk.blue(`\t     ‾-∨+-∨+_       ◦◦◦◦◦◦          
 //main arrays and student class
 let count;
 let democount = 0;
-let con = true;
+let condition = true;
 do {
     count = Math.floor(Math.random() * 100000 - 1);
     if (count >= 50000 && count <= 60000) {
-        con = false;
+        condition = false;
     }
-} while (con);
+} while (condition);
 const studentsArray = [];
 const deletedStudentsarray = [];
 class student {
@@ -44,7 +44,18 @@ class student {
         }
     }
     change_Name(name) {
-        this.name = name;
+        let namechangefees = 10;
+        if (this.name === name) {
+            console.log(chalk.redBright(`\t+——————————————————————————————————————————————————————+\n\t|    Student Name Cannot Be Renamed To Current Name    |\n\t+——————————————————————————————————————————————————————+\t\n`));
+        }
+        else if (this.balance >= namechangefees) {
+            this.balance -= namechangefees;
+            this.name = name;
+            console.log(`◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦\n\n\t${chalk.hex('46579B').bold(this.name)}${chalk.hex('#fc9d4e')(` Successfully Changed To ${chalk.yellowBright.bold(name)} With Fee $${chalk.greenBright(namechangefees)}`)}\n\n◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦`);
+        }
+        else {
+            console.log(chalk.redBright(`\t+———————————————————————————————————————————————————————————————+\n\t|    Student Dosen't have the Amount Required to Change Name    |\n\t+———————————————————————————————————————————————————————————————+\t\n`));
+        }
     }
     remove_balance(balance) {
         this.balance -= balance;
@@ -81,7 +92,15 @@ class student {
         console.log(`+———————————————————————————————————————————————————————————————+\n`);
     }
     enroll_course(...course) {
-        this.courses.push(...course);
+        let enrollementfees = 50;
+        if (this.balance >= enrollementfees) {
+            this.balance -= enrollementfees;
+            this.courses.push(...course);
+            console.log(`◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦\n\n\t${chalk.hex('46579B').bold(this.name)}${chalk.hex('#fc9d4e')(` Successfully Enrolled in ${chalk.yellowBright.bold(...course)} with Fee &${chalk.green(enrollementfees)}`)}\n\n◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦`);
+        }
+        else {
+            console.log(chalk.redBright(`\t+——————————————————————————————————————————————————————————+\n\t|    Student Dosen't have the Amount Required to Enroll    |\n\t+——————————————————————————————————————————————————————————+\t\n`));
+        }
     }
     view_balance() {
         console.log(`\n+———————————————————————————————————————————————————————————————+`);
@@ -175,7 +194,7 @@ async function addStudent() {
         console.log(chalk.redBright(`\n\t+—————————————————————————————————+\n\t|   Please Enter a valid Amount   |\n\t+—————————————————————————————————+\t\n`));
     }
     else if (student_info.balance <= 0 && student_info.balance < 100) {
-        console.log(chalk.redBright(`\t+————————————————————————————————————————————————+\n\t|  Student Not Must Have Alteast $100 To Enroll  |\n\t+————————————————————————————————————————————————+\t\n`));
+        console.log(chalk.redBright(`\t+————————————————————————————————————————————————+\n\t|    Student Must Have Alteast $100 To Enlist    |\n\t+————————————————————————————————————————————————+\t\n`));
     }
     else if (student_info.balance > 300000) {
         console.log(chalk.redBright(`\t+————————————————————————————————————————————————————————————————————————————————+\n\t|   Student Account Limit Reached - Amount Too large - Enrollement Unsuccesful   |\n\t+————————————————————————————————————————————————————————————————————————————————+\t\n`));
@@ -216,7 +235,6 @@ async function enrollStudent() {
             studentsArray.some(element => {
                 if (element.id === student_info.ID) {
                     element.enroll_course(studentinfo.otherCourse);
-                    console.log(`◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦\n\n\t${chalk.hex('46579B').bold(element.name)}${chalk.hex('#fc9d4e')(` Successfully Enrolled in `)}${chalk.yellowBright.bold(studentinfo.otherCourse)}\n\n◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦`);
                 }
             });
         }
@@ -231,7 +249,6 @@ async function enrollStudent() {
             studentsArray.some(element => {
                 if (element.id === student_info.ID) {
                     element.enroll_course(student_info.course);
-                    console.log(`◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦\n\n\t${chalk.hex('46579B').bold(element.name)}${chalk.hex('#fc9d4e')(` Successfully Enrolled in `)}${chalk.yellowBright.bold(student_info.course)}\n\n◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦`);
                 }
             });
         }
@@ -517,7 +534,7 @@ async function changeName() {
         }, {
             type: 'input',
             name: 'Name',
-            message: chalk.hex("FFA90A")(`Enter Student Name: \n`)
+            message: chalk.hex("FFA90A")(`Enter New Name for Student: \n`)
         }
     ]);
     let test = /^[a-zA-Z]+$/;
@@ -534,7 +551,6 @@ async function changeName() {
             studentsArray.some(element => {
                 if (element.id === student_info.ID) {
                     demoName(element.name);
-                    console.log(`◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦\n\n\t${chalk.hex('46579B').bold(element.name)}${chalk.hex('#fc9d4e')(` Successfully Changed To `)}${chalk.yellowBright.bold(studentname)}\n\n◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦`);
                     element.change_Name(studentname);
                 }
             });
