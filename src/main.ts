@@ -368,17 +368,17 @@ async function demoStudents(i:number){
     }else if(Number.isNaN(i)){
         console.log(chalk.redBright(`\n\t+———————————————————————————————————————————————————————+\n\t|             Enter A valid Number (1-100)              |\n\t+———————————————————————————————————————————————————————+\t\n`))
     }else{
-        let A:string='0';
-        let b:string='0';
-        let c:string='0';
+        let A:string='C';
+        let b:string='React';
+        let c:string='CSS';
         for(let a=1;a<=i;a++){
+            let coursenum=Math.floor(Math.random()*3+1);
             democount++;
             console.log(chalk.greenBright.bold('Generating....'));
             let ID=student.counter;
             const demoStudent=new student(`demoStudent${democount}`,(a*i*100/10),);
-            let coursenum=Math.floor(Math.random()*3+1);
             if(coursenum===1){
-                let num=Math.floor(Math.random()*3);
+                let num=Math.floor(Math.random()*3+1);
                 if (num==1){
                     A='C++';
                 }else if (num==2){
@@ -388,7 +388,7 @@ async function demoStudents(i:number){
                 }
                 demoStudent.enroll_course(A);
             }else if(coursenum===2){
-                let num=Math.floor(Math.random()*3);
+                let num=Math.floor(Math.random()*3+1);
                 if (num==1){
                     A='C++';b='C';
                 }else if (num==2){
@@ -398,7 +398,7 @@ async function demoStudents(i:number){
                 }
                 demoStudent.enroll_course(A,b)
             }else if(coursenum===3){
-                let num=Math.floor(Math.random()*3);
+                let num=Math.floor(Math.random()*3+1);
                 if (num==1){
                     A='Java';b='C';c='React'
                 }else if (num==2){
@@ -412,10 +412,18 @@ async function demoStudents(i:number){
             console.log(chalk.hex('#fc9d4e')(`\n\t\tAdded ${chalk.hex('46579B').bold(`demoStudent${democount}`)} with Balance ${chalk.hex("178C1F").bold("$"+(a*i*100/10))} and ID: ${chalk.yellowBright(ID)}`))
             console.log(`\n\t+———————————————————————————————————————————————————————————————+\n`)
             studentsArray.push(demoStudent);
-            if(democount>100){
-                console.log(chalk.redBright(`\n\t+———————————————————————————————————————————————————————+\n\t|         Demo Students are only limited to 100         |\n\t+———————————————————————————————————————————————————————+\t\n`))
+            if(democount>=100){
+                console.log(chalk.redBright(`\n\t+———————————————————————————————————————————————————————+\n\t|          -=({Demo Students Limit Reached})=-          |\n\t+———————————————————————————————————————————————————————+\t\n`))
                 break;
             }
+        }
+    }
+}
+async function demoName(name:string) {
+    for(let i=1;i<=200;i++){
+        if(name===`demoStudent`+i){
+            democount--;
+            console.log(chalk.green.bold('\n\t+——————————————————————————————+\n\t|  New Space for demo student  |\n\t+——————————————————————————————+'));
         }
     }
 }
@@ -441,12 +449,7 @@ async function changeName(){
         if(condition===true){
             studentsArray.some(element=>{
             if(element.id===student_info.ID){
-                for(let i=1;i<=100;i++){
-                    if(element.name===`demoStudent`+i){
-                        democount--;
-                        console.log(chalk.green.bold('\n\t+——————————————————————————————+\n\t|  New Space for demo student  |\n\t+——————————————————————————————+'))
-                    }
-                }
+                demoName(element.name);
                 console.log(`◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦\n\n\t${chalk.hex('46579B').bold(element.name)}${chalk.hex('#fc9d4e')(` Successfully Changed To `)}${chalk.yellowBright.bold(studentname)}\n\n◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦`);
                 element.change_Name(studentname);
             }});
@@ -543,24 +546,21 @@ async function deleteAccount(){
             message:chalk.hex("FFA90A")(`Enter Student ID: \n`)
         }
     ]);
-        let condition= await checkid(student_info.ID);
-        if(condition===true){
-            studentsArray.some(element=>{
-                if(element.id===student_info.ID){
-                   let index=studentsArray.indexOf(element);
-                   for(let i=1;i==100;i++){
-                    if(element.name===`demoStudent${i}`){
-                        democount--;
-                        console.log(chalk.green.bold('\n\t+——————————————————————————————+\n\t|  New Space for demo student  |\n\t+——————————————————————————————+'))
-                    }
-                   }
-                   element.deletebalance();
-                   deletedStudentsarray.push(studentsArray[index])
-                   studentsArray.splice(index,1);
-                   console.log(`\n+—————————————————————————————————————————————————————————————————————————————————————————————+`)
-                    console.log(chalk.hex('#fc9d4e')(`\t\tDeleted Account '${chalk.hex("178C1F").bold(element.name)}' with ID:${chalk.hex('46579B').bold(element.id)} from Students\t`))
-                    console.log(`+—————————————————————————————————————————————————————————————————————————————————————————————+\n`)
-            }})}else{console.log(condition)};
+    let condition= await checkid(student_info.ID);
+    if(condition===true){
+        studentsArray.some(element=>{
+        if(element.id===student_info.ID){
+            demoName(element.name);
+            let index=studentsArray.indexOf(element);
+            element.deletebalance();
+            deletedStudentsarray.push(studentsArray[index])
+            studentsArray.splice(index,1);
+            console.log(`\n+—————————————————————————————————————————————————————————————————————————————————————————————+`)
+            console.log(chalk.hex('#fc9d4e')(`\t\tDeleted Account '${chalk.hex("178C1F").bold(element.name)}' with ID:${chalk.hex('46579B').bold(element.id)} from Students\t`))
+            console.log(`+—————————————————————————————————————————————————————————————————————————————————————————————+\n`)
+        }
+    })
+    }else{console.log(condition)};
 };
 async function deletedCourses() {
     let student_info= await inquirer.prompt([

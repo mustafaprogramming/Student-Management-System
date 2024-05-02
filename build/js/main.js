@@ -432,17 +432,17 @@ async function demoStudents(i) {
         console.log(chalk.redBright(`\n\t+———————————————————————————————————————————————————————+\n\t|             Enter A valid Number (1-100)              |\n\t+———————————————————————————————————————————————————————+\t\n`));
     }
     else {
-        let A = '0';
-        let b = '0';
-        let c = '0';
+        let A = 'C';
+        let b = 'React';
+        let c = 'CSS';
         for (let a = 1; a <= i; a++) {
+            let coursenum = Math.floor(Math.random() * 3 + 1);
             democount++;
             console.log(chalk.greenBright.bold('Generating....'));
             let ID = student.counter;
             const demoStudent = new student(`demoStudent${democount}`, (a * i * 100 / 10));
-            let coursenum = Math.floor(Math.random() * 3 + 1);
             if (coursenum === 1) {
-                let num = Math.floor(Math.random() * 3);
+                let num = Math.floor(Math.random() * 3 + 1);
                 if (num == 1) {
                     A = 'C++';
                 }
@@ -455,7 +455,7 @@ async function demoStudents(i) {
                 demoStudent.enroll_course(A);
             }
             else if (coursenum === 2) {
-                let num = Math.floor(Math.random() * 3);
+                let num = Math.floor(Math.random() * 3 + 1);
                 if (num == 1) {
                     A = 'C++';
                     b = 'C';
@@ -471,7 +471,7 @@ async function demoStudents(i) {
                 demoStudent.enroll_course(A, b);
             }
             else if (coursenum === 3) {
-                let num = Math.floor(Math.random() * 3);
+                let num = Math.floor(Math.random() * 3 + 1);
                 if (num == 1) {
                     A = 'Java';
                     b = 'C';
@@ -493,10 +493,18 @@ async function demoStudents(i) {
             console.log(chalk.hex('#fc9d4e')(`\n\t\tAdded ${chalk.hex('46579B').bold(`demoStudent${democount}`)} with Balance ${chalk.hex("178C1F").bold("$" + (a * i * 100 / 10))} and ID: ${chalk.yellowBright(ID)}`));
             console.log(`\n\t+———————————————————————————————————————————————————————————————+\n`);
             studentsArray.push(demoStudent);
-            if (democount > 100) {
-                console.log(chalk.redBright(`\n\t+———————————————————————————————————————————————————————+\n\t|         Demo Students are only limited to 100         |\n\t+———————————————————————————————————————————————————————+\t\n`));
+            if (democount >= 100) {
+                console.log(chalk.redBright(`\n\t+———————————————————————————————————————————————————————+\n\t|          -=({Demo Students Limit Reached})=-          |\n\t+———————————————————————————————————————————————————————+\t\n`));
                 break;
             }
+        }
+    }
+}
+async function demoName(name) {
+    for (let i = 1; i <= 200; i++) {
+        if (name === `demoStudent` + i) {
+            democount--;
+            console.log(chalk.green.bold('\n\t+——————————————————————————————+\n\t|  New Space for demo student  |\n\t+——————————————————————————————+'));
         }
     }
 }
@@ -525,12 +533,7 @@ async function changeName() {
         if (condition === true) {
             studentsArray.some(element => {
                 if (element.id === student_info.ID) {
-                    for (let i = 1; i <= 100; i++) {
-                        if (element.name === `demoStudent` + i) {
-                            democount--;
-                            console.log(chalk.green.bold('\n\t+——————————————————————————————+\n\t|  New Space for demo student  |\n\t+——————————————————————————————+'));
-                        }
-                    }
+                    demoName(element.name);
                     console.log(`◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦\n\n\t${chalk.hex('46579B').bold(element.name)}${chalk.hex('#fc9d4e')(` Successfully Changed To `)}${chalk.yellowBright.bold(studentname)}\n\n◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦`);
                     element.change_Name(studentname);
                 }
@@ -659,13 +662,8 @@ async function deleteAccount() {
     if (condition === true) {
         studentsArray.some(element => {
             if (element.id === student_info.ID) {
+                demoName(element.name);
                 let index = studentsArray.indexOf(element);
-                for (let i = 1; i == 100; i++) {
-                    if (element.name === `demoStudent${i}`) {
-                        democount--;
-                        console.log(chalk.green.bold('\n\t+——————————————————————————————+\n\t|  New Space for demo student  |\n\t+——————————————————————————————+'));
-                    }
-                }
                 element.deletebalance();
                 deletedStudentsarray.push(studentsArray[index]);
                 studentsArray.splice(index, 1);
