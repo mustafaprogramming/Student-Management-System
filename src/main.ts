@@ -6,28 +6,65 @@ console.log(chalk.blue(`\n\n\t     _-^+-^+‾       ◦◦◦◦◦◦          
 console.log(chalk.blue(`\t  <==!~~ ☆*: .｡. o(≧ ${chalk.greenBright.bold(`Welcome To Mustafa's - Student Management System`)} ≦)o .｡.:*☆ ~~!==>`));
 console.log(chalk.blue(`\t     ‾-∨+-∨+_       ◦◦◦◦◦◦          ◦◦◦ ◎ ◉ ◯ ◉ ◎ ◦◦◦          ◦◦◦◦◦◦       _+∨-+∨-‾\n\n`));
 //main arrays and student class
+let count:number;
+let democount=0
+let con=true;
+do{
+    count=Math.floor(Math.random()*100000-1);
+    if (count>=50000&&count<=60000){
+        con=false;
+    }
+}while(con)
 const studentsArray:student[]=[];
 const deletedStudentsarray:student[]=[];
 class student{
-    static counter=Math.floor(Math.random()*100000-1);
+    static counter=count;
     id:number;
     name:string;
     courses:string[];
+    delcourses:string[];
     balance:number;
     constructor(studentname:string,balance:number){
         this.name=studentname;
         this.id=student.counter++;
         this.courses=[];
+        this.delcourses=[];
         this.balance=balance;
     }
     add_balance(balance:number){
         this.balance+=balance;
-        console.log(`\n+—————————————————————————————————————————————————————————————————————————————————+`)
-        console.log(chalk.hex('#fc9d4e')(`\tBalance of ${chalk.hex("178C1F").bold("$"+balance)} has been Credited to ${chalk.hex('46579B').bold(this.name)}\t`))
-        console.log(`+—————————————————————————————————————————————————————————————————————————————————+\n`)
+        if(this.balance>500000){
+            this.balance-=balance;
+            console.log(chalk.redBright(`\t+————————————————————————————————————————————————————————————————————————————————————+\n\t|   Student Account Limit Reached(${chalk.green.bold(500000)})) - Amount Too large - Credit Unsuccesful   |\n\t+————————————————————————————————————————————————————————————————————————————————————+\t\n`))
+        others();
+        }
+        else{
+            console.log(`\n+—————————————————————————————————————————————————————————————————————————————————+`)
+            console.log(chalk.hex('#fc9d4e')(`\tBalance of ${chalk.hex("178C1F").bold("$"+balance)} has been Credited to ${chalk.hex('46579B').bold(this.name)}\t`))
+            console.log(`+—————————————————————————————————————————————————————————————————————————————————+\n`)
+            }
+    }
+    change_Name(name:string){
+        this.name=name;
+    }
+    remove_balance(balance:number){
+        this.balance-=balance;
+        if(this.balance<0){
+            this.balance+=balance;
+            console.log(chalk.redBright(`\n\t+——————————————————————————————————————————————————————————————————————————+\n\t|   Student Account Dosen't Have The Required Amount - Dedit Unsuccesful   |\n\t+——————————————————————————————————————————————————————————————————————————+\t\n`))
+        }
+        else{
+            console.log(`\n+——————————————————————————————————————————————————————————————————————————————————+`)
+            console.log(chalk.hex('#fc9d4e')(`\tBalance of ${chalk.hex("178C1F").bold("$"+balance)} has been Debited From ${chalk.hex('46579B').bold(this.name)}\t`))
+            console.log(`+——————————————————————————————————————————————————————————————————————————————————+\n`)
+            }
+    }
+    deletebalance(){
+        this.balance=0;
     }
     delete_course(course:string){
         if(this.courses.includes(course)){
+            this.delcourses.push(course);
             let index=this.courses.indexOf(course);
             this.courses.splice(index,1);
             console.log(`\n+———————————————————————————————————————————————————————————————+`)
@@ -36,10 +73,14 @@ class student{
         }else{
             console.log(chalk.redBright(`\t+—————————————————————————————————+\n\t|   Please Enter a valid Course   |\n\t+—————————————————————————————————+\t`))
         }
-        
     };
-    enroll_course(course:string){
-        this.courses.push(course)
+    view_delcourse(){
+            console.log(`\n+———————————————————————————————————————————————————————————————+`)
+            console.log(chalk.hex('#fc9d4e')(`\t\tDeleted Courses of ${chalk.hex('46579B').bold(this.name)}: '${chalk.hex("178C1F").bold(this.delcourses)}'\t`))
+            console.log(`+———————————————————————————————————————————————————————————————+\n`)
+    }
+    enroll_course(...course:string[]){
+        this.courses.push(...course)
     }
     view_balance(){
         console.log(`\n+———————————————————————————————————————————————————————————————+`)
@@ -85,11 +126,14 @@ async function main(){
         }
     ]);
     if(operation.option===chalk.hex("#47FF75").bold(`Add Student`)){
-        addStudent();
+        await addStudent();
+        main();
     }else if(operation.option===chalk.hex("#46579B").bold(`Enroll Student`)){
-        enrollStudent();
+        await enrollStudent();
+        main();
     }else if(operation.option===chalk.hex("#178C1F").bold(`Pay Student Fees`)){
-        payStudentfees();
+        await payStudentfees();
+        main();
     }else if(operation.option===chalk.hex("#688D84").bold(`Show Student Status`)){
         showStudentStatus();
     }else if(operation.option===chalk.hex("#880718").bold(`Exit Program`)){
@@ -131,7 +175,6 @@ async function addStudent(){
     console.log(chalk.hex('#fc9d4e')(`\n\t\tAdded ${chalk.hex('46579B').bold(student_info.Name)} with Balance ${chalk.hex("178C1F").bold("$"+student_info.balance)} and ID: ${chalk.yellowBright(ID)}`))
     console.log(`\n\t+———————————————————————————————————————————————————————————————+\n`)
     }
-    main();
 };
 async function enrollStudent(){
     let student_info= await inquirer.prompt([
@@ -170,7 +213,6 @@ async function enrollStudent(){
                     console.log(`◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦\n\n\t${chalk.hex('46579B').bold(element.name)}${chalk.hex('#fc9d4e')(` Successfully Enrolled in `)}${chalk.yellowBright.bold(student_info.course)}\n\n◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦`)}})
             }else{console.log(condition)};
     }   
-    main();
 }
 async function payStudentfees(){
     let student_info= await inquirer.prompt([
@@ -254,7 +296,6 @@ async function payStudentfees(){
                     }else{console.log(condition)}
             }}
     }
-    main();
 }
 function terminate(){
     console.log(chalk.blue(`\n\n\t     _-^+-^+‾                       ◦◦◦ ◎ ◉ ◯ ◉ ◎ ◦◦◦                         ‾+^-+^-_`));
@@ -277,24 +318,141 @@ async function others(){
             message: chalk.hex("FFA90A")("Select An Option:\n"),
             choices: [
                     chalk.hex("#47FF75").bold(`Add balance`),
+                    chalk.hex("#47FF75").bold(`Remove balance`),
+                    chalk.hex("#46579B").bold(`Change Name`),
                     chalk.hex("#46579B").bold(`Delete student`),
                     chalk.hex("#178C1F").bold(`Delete course`),
+                    chalk.hex("#178C1F").bold(`Show Deleted course`),
                     chalk.hex("#688D84").bold(`Student History -=(SYSTEM)=-`),
-                    chalk.hex("#880718").bold(`←— Back to Main Menu`)
+                    chalk.hex("#688D84").bold(`Create Demo Students -=(EXPERIMENTAL)=-`),
+                    chalk.hex("#880718").bold(`←— Back to Main Menu`),
             ]
         }])
         if(aadvanceOption.option===chalk.hex("#47FF75").bold(`Add balance`)){
-            addBalance();
+            await addBalance();
+            others()
+        }else if(aadvanceOption.option=== chalk.hex("#47FF75").bold(`Remove balance`)){
+            await RemoveBalance();
+            others()
+        }else if(aadvanceOption.option=== chalk.hex("#46579B").bold(`Change Name`)){
+            await changeName();
+            others()
         }else if(aadvanceOption.option=== chalk.hex("#46579B").bold(`Delete student`)){
-            deleteAccount()
+            await deleteAccount()
+            others()
         }else if(aadvanceOption.option=== chalk.hex("#178C1F").bold(`Delete course`)){
-            deleteCourses()
+            await deleteCourses()
+            others()
+        }else if(aadvanceOption.option=== chalk.hex("#178C1F").bold(`Show Deleted course`)){
+            await deletedCourses()
+            others()
         }else if(aadvanceOption.option===chalk.hex("#688D84").bold(`Student History -=(SYSTEM)=-`)){
             showAllStudents()
+        }else if(aadvanceOption.option===chalk.hex("#688D84").bold(`Create Demo Students -=(EXPERIMENTAL)=-`)){
+            let amount=await inquirer.prompt([{
+                type:"number",
+                name:'count',
+                message:chalk.hex('FFA90A')('Enter the Number of Students to Generate: ')
+            }])
+            await demoStudents(amount.count);
+            others();
         }else if(aadvanceOption.option=== chalk.hex("#880718").bold(`←— Back to Main Menu`)){
             main();
         }
 }
+async function demoStudents(i:number){
+    if(democount>=100){
+        console.log(chalk.redBright(`\n\t+———————————————————————————————————————————————————————+\n\t|         Demo Students are only limited to 100         |\n\t+———————————————————————————————————————————————————————+\t\n`))
+    }else if(i<0){
+        console.log(chalk.redBright(`\n\t+———————————————————————————————————————————————————————+\n\t|             Enter A valid Amount (1-100)              |\n\t+———————————————————————————————————————————————————————+\t\n`))
+    }else if(Number.isNaN(i)){
+        console.log(chalk.redBright(`\n\t+———————————————————————————————————————————————————————+\n\t|             Enter A valid Number (1-100)              |\n\t+———————————————————————————————————————————————————————+\t\n`))
+    }else{
+        let A:string='0';
+        let b:string='0';
+        let c:string='0';
+        for(let a=1;a<=i;a++){
+            democount++;
+            console.log(chalk.greenBright.bold('Generating....'));
+            let ID=student.counter;
+            const demoStudent=new student(`demoStudent${democount}`,(a*i*100/10),);
+            let coursenum=Math.floor(Math.random()*3+1);
+            if(coursenum===1){
+                let num=Math.floor(Math.random()*3);
+                if (num==1){
+                    A='C++';
+                }else if (num==2){
+                    A='Java';
+                }else if (num==3){
+                    A='CSS';
+                }
+                demoStudent.enroll_course(A);
+            }else if(coursenum===2){
+                let num=Math.floor(Math.random()*3);
+                if (num==1){
+                    A='C++';b='C';
+                }else if (num==2){
+                    A='React';b='CSS';
+                }else if (num==3){
+                    A='Java';b='C##';
+                }
+                demoStudent.enroll_course(A,b)
+            }else if(coursenum===3){
+                let num=Math.floor(Math.random()*3);
+                if (num==1){
+                    A='Java';b='C';c='React'
+                }else if (num==2){
+                    A='React';b='CSS';c='React'
+                }else if (num==3){
+                    A='React';b='C##';c='CSS';
+                }
+                demoStudent.enroll_course(A,b,c)
+            }
+            console.log(`\n\t+———————————————————————————————————————————————————————————————+`)
+            console.log(chalk.hex('#fc9d4e')(`\n\t\tAdded ${chalk.hex('46579B').bold(`demoStudent${democount}`)} with Balance ${chalk.hex("178C1F").bold("$"+(a*i*100/10))} and ID: ${chalk.yellowBright(ID)}`))
+            console.log(`\n\t+———————————————————————————————————————————————————————————————+\n`)
+            studentsArray.push(demoStudent);
+            if(democount>100){
+                console.log(chalk.redBright(`\n\t+———————————————————————————————————————————————————————+\n\t|         Demo Students are only limited to 100         |\n\t+———————————————————————————————————————————————————————+\t\n`))
+                break;
+            }
+        }
+    }
+}
+async function changeName(){
+    let student_info= await inquirer.prompt([
+        {
+            type:"number",
+            name:'ID',
+            message:chalk.hex("FFA90A")(`Enter Student ID: \n`)
+        },{
+            type:'input',
+            name:'Name',
+            message:chalk.hex("FFA90A")(`Enter Student Name: \n`)
+        }]);
+    let test=/^[a-zA-Z]+$/;
+    let studentname=student_info.Name.trim();
+    if(!test.test(studentname)){
+        console.log(chalk.redBright(`\n\t+————————————————————————————————————————————————————+\n\t|    Please Enter a valid Name -=(Only Letters)=-    |\n\t+————————————————————————————————————————————————————+\t\n`))
+    }else if(studentname.length>20||studentname.length<3){
+        console.log(chalk.redBright(`\n\t+——————————————————————————————————————————————————————+\n\t|  Student Name Can Only Be in Range 3—20 Characters   |\n\t+——————————————————————————————————————————————————————+\t\n`))
+    }else{
+        let condition= await checkid(student_info.ID);
+        if(condition===true){
+            studentsArray.some(element=>{
+            if(element.id===student_info.ID){
+                for(let i=1;i<=100;i++){
+                    if(element.name===`demoStudent`+i){
+                        democount--;
+                        console.log(chalk.green.bold('\n\t+——————————————————————————————+\n\t|  New Space for demo student  |\n\t+——————————————————————————————+'))
+                    }
+                }
+                console.log(`◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦\n\n\t${chalk.hex('46579B').bold(element.name)}${chalk.hex('#fc9d4e')(` Successfully Changed To `)}${chalk.yellowBright.bold(studentname)}\n\n◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦`);
+                element.change_Name(studentname);
+            }});
+        }else{console.log(condition)};
+            };
+        }
 async function addBalance(){
     let student_info= await inquirer.prompt([
         {
@@ -309,7 +467,7 @@ async function addBalance(){
     ]);
     if(Number.isNaN(student_info.Balance)||student_info.Balance<=0){
         console.log(chalk.redBright(`\t+—————————————————————————————————+\n\t|   Please Enter a valid Amount   |\n\t+—————————————————————————————————+\t`))
-    }else if(student_info.Balance>250000){
+    }else if(student_info.Balance>200000){
         console.log(chalk.redBright(`\t+————————————————————————————————————+\n\t|  Amount Exceeds The Allowed Limit  |\n\t+————————————————————————————————————+\t`))
     }else{
         let condition= await checkid(student_info.ID);
@@ -317,7 +475,7 @@ async function addBalance(){
             studentsArray.some(element=>{
                 if(element.id===student_info.ID){
                     element.add_balance(student_info.Balance);
-                }});
+                }})
                 let question= await inquirer.prompt([
                     {
                         type:'list',
@@ -326,14 +484,56 @@ async function addBalance(){
                         choices:[chalk.greenBright.bold('Yes'),chalk.redBright('No')]
                     }]);
                     if (question.answer===chalk.greenBright.bold('Yes')){
-                        studentsArray.some(element=>{
+                        studentsArray.some((element)=>{
                             if(element.id===student_info.ID){
                                 element.view_balance();
-                            }});
-                    }
+                            }
+                        })
+                    }else{others();};
             }else{console.log(condition)};
     }
-    others();
+
+};
+async function RemoveBalance(){
+    let student_info= await inquirer.prompt([
+        {
+            type:'number',
+            name:'ID',
+            message:chalk.hex("FFA90A")(`Enter Student ID: \n`)
+        },{
+            type:'number',
+            name:'Balance',
+            message:chalk.hex("FFA90A")(`Enter Debit Amount: \n`)
+        }
+    ]);
+    if(Number.isNaN(student_info.Balance)||student_info.Balance<=0){
+        console.log(chalk.redBright(`\t+—————————————————————————————————+\n\t|   Please Enter a valid Amount   |\n\t+—————————————————————————————————+\t`))
+    }else if(student_info.Balance>200000){
+        console.log(chalk.redBright(`\t+————————————————————————————————————+\n\t|  Amount Exceeds The Allowed Limit  |\n\t+————————————————————————————————————+\t`))
+    }else{
+        let condition= await checkid(student_info.ID);
+        if(condition===true){
+            studentsArray.some(element=>{
+                if(element.id===student_info.ID){
+                    element.remove_balance(student_info.Balance);
+                }})
+                let question= await inquirer.prompt([
+                    {
+                        type:'list',
+                        name:'answer',
+                        message:chalk.hex("FFA90A")(`Do You Want To View Your Balance: \n`),
+                        choices:[chalk.greenBright.bold('Yes'),chalk.redBright('No')]
+                    }]);
+                    if (question.answer===chalk.greenBright.bold('Yes')){
+                        studentsArray.some((element)=>{
+                            if(element.id===student_info.ID){
+                                element.view_balance();
+                            }
+                        })
+                    };
+            }else{console.log(condition)};
+    }
+    ;
 };
 async function deleteAccount(){
     let student_info= await inquirer.prompt([
@@ -348,14 +548,35 @@ async function deleteAccount(){
             studentsArray.some(element=>{
                 if(element.id===student_info.ID){
                    let index=studentsArray.indexOf(element);
+                   for(let i=1;i==100;i++){
+                    if(element.name===`demoStudent${i}`){
+                        democount--;
+                        console.log(chalk.green.bold('\n\t+——————————————————————————————+\n\t|  New Space for demo student  |\n\t+——————————————————————————————+'))
+                    }
+                   }
+                   element.deletebalance();
                    deletedStudentsarray.push(studentsArray[index])
                    studentsArray.splice(index,1);
-                   console.log(`\n+————————————————————————————————————————————————————————————————————————+`)
+                   console.log(`\n+—————————————————————————————————————————————————————————————————————————————————————————————+`)
                     console.log(chalk.hex('#fc9d4e')(`\t\tDeleted Account '${chalk.hex("178C1F").bold(element.name)}' with ID:${chalk.hex('46579B').bold(element.id)} from Students\t`))
-                    console.log(`+————————————————————————————————————————————————————————————————————————+\n`)
-            }})}else{console.log(condition)}
-    others();
+                    console.log(`+—————————————————————————————————————————————————————————————————————————————————————————————+\n`)
+            }})}else{console.log(condition)};
 };
+async function deletedCourses() {
+    let student_info= await inquirer.prompt([
+        {
+            type:'number',
+            name:'ID',
+            message:chalk.hex("FFA90A")(`Enter Student ID: \n`)
+        }]);    
+        let condition= await checkid(student_info.ID);
+        if(condition===true){
+            studentsArray.some(element=>{
+            if(element.id===student_info.ID){
+                    element.view_delcourse();
+            };
+        })}else{console.log(condition)};
+}
 async function deleteCourses(){
     let student_info= await inquirer.prompt([
         {
@@ -390,92 +611,327 @@ async function deleteCourses(){
             if(element.id===student_info.ID){
                     element.delete_course(student_info.course);
             };
-        })}else{console.log(condition)}}
-    others();
+        })}else{console.log(condition)}};
 };
 async function showAllStudents(){
+    
         if(studentsArray.length===0 &&deletedStudentsarray.length===0){
-            console.log(chalk.redBright(`\t+———————————————————————————————————————————+\n\t|     NO STUDENT INFORMATION AVAILABLE     |\n\t+———————————————————————————————————————————+\t`))
+            console.log(chalk.redBright(`\t+————————————————————————————————————————————+\n\t|     NO STUDENT INFORMATION AVAILABLE     |\n\t+————————————————————————————————————————————+\t`))
+            others();
         }else{
             let question= await inquirer.prompt([
                 {
                     type:'list',
                     name:'answer',
                     message:chalk.hex("FFA90A")(`Select Type: \n`),
-                    choices:[chalk.greenBright.bold('Active Students'),chalk.hex('fc9d4e')('ALL Students'),chalk.redBright('Deleted Students')]
+                    choices:[chalk.greenBright.bold('Students Accounts'),chalk.hex('fc9d4e')('Students Courses'),chalk.redBright('Show Students Balance'),"All Student info",chalk.red.bold(`←— Back to Others`)]
                 }]);
-                if(question.answer===chalk.greenBright.bold('Active Students')){
-                    let count:number=studentsArray.length;
-                    console.log(chalk.greenBright.bold(`\n\t\t-::ACTIVE STUDENTS -=(${count})=-::-\n`));
-                    console.log(chalk.hex("fc9d4e").bold(`\n\t\tName\t `)+': '+chalk.blue.bold(`ID\n`));
-                    studentsArray.forEach((element)=>{
-                        count++;
-                        if(element.name.length>0&&element.name.length<=6){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}\t\t      : ${chalk.blue(element.id)}|`)
-                        }else if(element.name.length>6&&element.name.length<=14){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}\t      : ${chalk.blue(element.id)}|`)
-                        }else if(element.name.length===15){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}      : ${chalk.blue(element.id)}|`)
-                        }else if(element.name.length===16){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}     : ${chalk.blue(element.id)}|`)
-                        }else if(element.name.length===17){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}    : ${chalk.blue(element.id)}|`)
-                        }else if(element.name.length===18){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}   : ${chalk.blue(element.id)}|`)
-                        }else if(element.name.length===19){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}  : ${chalk.blue(element.id)}|`)
-                        }else if(element.name.length===20){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)} : ${chalk.blue(element.id)}|`)
-                        }})
-                }else if(question.answer===chalk.hex('fc9d4e')('ALL Students')){
-                    let allarray:student[]=[...studentsArray,...deletedStudentsarray];
-                    let count:number=allarray.length;
-                    console.log(chalk.greenBright.bold(`\n\t\t-::ALL STUDENTS -=(${count})=-::-\n`));
-                    console.log(chalk.hex("fc9d4e").bold(`\n\t\tName\t `)+': '+chalk.blue.bold(`ID\n`));
-                    allarray.forEach((element)=>{
-                        count++;
-                        if(element.name.length>0&&element.name.length<=6){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}\t\t      : ${chalk.blue(element.id)}|`)
-                        }else if(element.name.length>6&&element.name.length<=14){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}\t      : ${chalk.blue(element.id)}|`)
-                        }else if(element.name.length===15){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}      : ${chalk.blue(element.id)}|`)
-                        }else if(element.name.length===16){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}     : ${chalk.blue(element.id)}|`)
-                        }else if(element.name.length===17){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}    : ${chalk.blue(element.id)}|`)
-                        }else if(element.name.length===18){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}   : ${chalk.blue(element.id)}|`)
-                        }else if(element.name.length===19){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}  : ${chalk.blue(element.id)}|`)
-                        }else if(element.name.length===20){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)} : ${chalk.blue(element.id)}|`)
-                        }})
-                }else if(question.answer===chalk.redBright('Deleted Students')){
-                    let count:number=deletedStudentsarray.length;
-                    console.log(chalk.greenBright.bold(`\n\t\t-::DELETED STUDENTS -=(${count})=-::-\n`));
-                    console.log(chalk.hex("fc9d4e").bold(`\n\t\tName\t `)+': '+chalk.blue.bold(`ID\n`));
-                    deletedStudentsarray.forEach((element)=>{
-                        count++;
-                        if(element.name.length>0&&element.name.length<=6){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}\t\t      : ${chalk.blue(element.id)}|`)
-                        }else if(element.name.length>6&&element.name.length<=14){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}\t      : ${chalk.blue(element.id)}|`)
-                        }else if(element.name.length===15){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}      : ${chalk.blue(element.id)}|`)
-                        }else if(element.name.length===16){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}     : ${chalk.blue(element.id)}|`)
-                        }else if(element.name.length===17){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}    : ${chalk.blue(element.id)}|`)
-                        }else if(element.name.length===18){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}   : ${chalk.blue(element.id)}|`)
-                        }else if(element.name.length===19){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}  : ${chalk.blue(element.id)}|`)
-                        }else if(element.name.length===20){
-                            console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)} : ${chalk.blue(element.id)}|`)
-                        }})
+            if(question.answer===chalk.greenBright.bold('Students Accounts')){
+                let question= await inquirer.prompt([
+                    {
+                        type:'list',
+                        name:'answer',
+                        message:chalk.hex("FFA90A")(`Select Type: \n`),
+                        choices:[chalk.greenBright.bold('Active Students'),chalk.hex('fc9d4e')('ALL Students'),chalk.redBright('Deleted Students'),chalk.red.bold(`←— Back to Student History -=(SYSTEM)=-`)]
+                    }]);
+                    if(question.answer===chalk.greenBright.bold('Active Students')){
+                        let count:number=studentsArray.length;
+                        console.log(chalk.greenBright.bold(`\n\t\t-::ACTIVE STUDENTS -=(${chalk.greenBright(count)})=-::-\n`));
+                        console.log(chalk.hex("fc9d4e").bold(`\n\t\tName          `)+':  '+chalk.blue.bold(`ID\n`));
+                        studentsArray.forEach((element)=>{
+                            if(element.name.length>0&&element.name.length<=6){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}\t\t      : ${chalk.blue(element.id)}|`)
+                            }else if(element.name.length>6&&element.name.length<=14){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}\t      : ${chalk.blue(element.id)}|`)
+                            }else if(element.name.length===15){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}      : ${chalk.blue(element.id)}|`)
+                            }else if(element.name.length===16){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}     : ${chalk.blue(element.id)}|`)
+                            }else if(element.name.length===17){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}    : ${chalk.blue(element.id)}|`)
+                            }else if(element.name.length===18){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}   : ${chalk.blue(element.id)}|`)
+                            }else if(element.name.length===19){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}  : ${chalk.blue(element.id)}|`)
+                            }else if(element.name.length===20){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)} : ${chalk.blue(element.id)}|`)
+                            }})
+                            showAllStudents();
+                    }else if(question.answer===chalk.hex('fc9d4e')('ALL Students')){
+                        let allarray:student[]=[...studentsArray,...deletedStudentsarray];
+                        let count:number=allarray.length;
+                        console.log(chalk.greenBright.bold(`\n\t\t-::ALL STUDENTS -=(${chalk.greenBright(count)})=-::-\n`));
+                        console.log(chalk.hex("fc9d4e").bold(`\n\t\tName          `)+':  '+chalk.blue.bold(`ID\n`));
+                        allarray.forEach((element)=>{
+                            if(element.name.length>0&&element.name.length<=6){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}\t\t      : ${chalk.blue(element.id)}|`)
+                            }else if(element.name.length>6&&element.name.length<=14){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}\t      : ${chalk.blue(element.id)}|`)
+                            }else if(element.name.length===15){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}      : ${chalk.blue(element.id)}|`)
+                            }else if(element.name.length===16){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}     : ${chalk.blue(element.id)}|`)
+                            }else if(element.name.length===17){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}    : ${chalk.blue(element.id)}|`)
+                            }else if(element.name.length===18){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}   : ${chalk.blue(element.id)}|`)
+                            }else if(element.name.length===19){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}  : ${chalk.blue(element.id)}|`)
+                            }else if(element.name.length===20){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)} : ${chalk.blue(element.id)}|`)
+                            }})
+                            showAllStudents();
+                    }else if(question.answer===chalk.redBright('Deleted Students')){
+                        let count:number=deletedStudentsarray.length;
+                        console.log(chalk.greenBright.bold(`\n\t\t-::DELETED STUDENTS -=(${chalk.greenBright(count)})=-::-\n`));
+                        console.log(chalk.hex("fc9d4e").bold(`\n\t\tName          `)+':  '+chalk.blue.bold(`ID\n`));
+                        deletedStudentsarray.forEach((element)=>{
+                            if(element.name.length>0&&element.name.length<=6){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}\t\t      : ${chalk.blue(element.id)}|`)
+                            }else if(element.name.length>6&&element.name.length<=14){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}\t      : ${chalk.blue(element.id)}|`)
+                            }else if(element.name.length===15){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}      : ${chalk.blue(element.id)}|`)
+                            }else if(element.name.length===16){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}     : ${chalk.blue(element.id)}|`)
+                            }else if(element.name.length===17){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}    : ${chalk.blue(element.id)}|`)
+                            }else if(element.name.length===18){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}   : ${chalk.blue(element.id)}|`)
+                            }else if(element.name.length===19){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)}  : ${chalk.blue(element.id)}|`)
+                            }else if(element.name.length===20){
+                                console.log(`\t|${chalk.hex('fc9d4e').bold(element.name)} : ${chalk.blue(element.id)}|`)
+                            }})
+                            showAllStudents();
+                    }else{
+                        showAllStudents();
+                    }
                 }
-            others();
+            else if(question.answer===chalk.hex('fc9d4e')('Students Courses')){
+                    let question= await inquirer.prompt([
+                        {
+                            type:'list',
+                            name:'answer',
+                            message:chalk.hex("FFA90A")(`Select Type: \n`),
+                            choices:[chalk.greenBright.bold('Active Cources'),chalk.hex('fc9d4e')('ALL Courses'),chalk.redBright('Deleted Courses'),chalk.red.bold(`←— Back to Student History -=(SYSTEM)=-`)]
+                        }]);
+                    if(question.answer===chalk.greenBright.bold('Active Cources')){
+                        let count:number=studentsArray.length;
+                        console.log(chalk.greenBright.bold(`\n\t\t-::ACTIVE STUDENT-=(${chalk.greenBright(count)})=- COURSES::-\n`));
+                        console.log(chalk.hex("fc9d4e").bold(`\n\t   ID   :\t Name\t    `)+' :  '+chalk.blue.bold(`COURSES\n`));
+                        studentsArray.forEach((element)=>{
+                            if(element.name.length>0&&element.name.length<=6){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}\t\t      : ${chalk.blue(element.courses)}`)
+                            }else if(element.name.length>6&&element.name.length<=14){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}\t      : ${chalk.blue(element.courses)}`)
+                            }else if(element.name.length===15){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}      : ${chalk.blue(element.courses)}`)
+                            }else if(element.name.length===16){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}     : ${chalk.blue(element.courses)}`)
+                            }else if(element.name.length===17){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}    : ${chalk.blue(element.courses)}`)
+                            }else if(element.name.length===18){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}   : ${chalk.blue(element.courses)}`)
+                            }else if(element.name.length===19){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}  : ${chalk.blue(element.courses)}`)
+                            }else if(element.name.length===20){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)} : ${chalk.blue(element.courses)}`)
+                            }})
+                            showAllStudents();
+                    }else if(question.answer===chalk.hex('fc9d4e')('ALL Courses')){
+                        let count:number=studentsArray.length;
+                        console.log(chalk.greenBright.bold(`\n\t\t-::ALL STUDENT-=(${chalk.greenBright(count)})=- COURSES::-\n`));
+                        console.log(chalk.hex("fc9d4e").bold(`\n\t   ID   :\t Name\t    `)+' :  '+chalk.blue.bold(`COURSES\n`));
+                        studentsArray.forEach((element)=>{
+                            if(element.name.length>0&&element.name.length<=6){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}\t\t      : ${chalk.blue(element.courses,element.delcourses)}`)
+                            }else if(element.name.length>6&&element.name.length<=14){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}\t      : ${chalk.blue(element.courses,element.delcourses)}`)
+                            }else if(element.name.length===15){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}      : ${chalk.blue(element.courses,element.delcourses)}`)
+                            }else if(element.name.length===16){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}     : ${chalk.blue(element.courses,element.delcourses)}`)
+                            }else if(element.name.length===17){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}    : ${chalk.blue(element.courses,element.delcourses)}`)
+                            }else if(element.name.length===18){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}   : ${chalk.blue(element.courses,element.delcourses)}`)
+                            }else if(element.name.length===19){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}  : ${chalk.blue(element.courses,element.delcourses)}`)
+                            }else if(element.name.length===20){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)} : ${chalk.blue(element.courses,element.delcourses)}`)
+                            }})
+                            showAllStudents();
+                    }else if(question.answer===chalk.redBright('Deleted Courses')){
+                        let count:number=studentsArray.length;
+                        console.log(chalk.greenBright.bold(`\n\t\t-::DELETED STUDENT-=(${chalk.greenBright(count)})=- COURSES::-\n`));
+                        console.log(chalk.hex("fc9d4e").bold(`\n\t   ID   :\t Name\t    `)+' :  '+chalk.blue.bold(`COURSES\n`));
+                        studentsArray.forEach((element)=>{
+                            if(element.name.length>0&&element.name.length<=6){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}\t\t      : ${chalk.blue(element.delcourses)}`)
+                            }else if(element.name.length>6&&element.name.length<=14){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}\t      : ${chalk.blue(element.delcourses)}`)
+                            }else if(element.name.length===15){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}      : ${chalk.blue(element.delcourses)}`)
+                            }else if(element.name.length===16){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}     : ${chalk.blue(element.delcourses)}`)
+                            }else if(element.name.length===17){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}    : ${chalk.blue(element.delcourses)}`)
+                            }else if(element.name.length===18){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}   : ${chalk.blue(element.delcourses)}`)
+                            }else if(element.name.length===19){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}  : ${chalk.blue(element.delcourses)}`)
+                            }else if(element.name.length===20){
+                                console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)} : ${chalk.blue(element.delcourses)}`)
+                            }})
+                            showAllStudents();
+                    }else{
+                        showAllStudents();
+                    }
+                }
+            else if(question.answer===chalk.redBright('Show Students Balance')){
+                let count:number=studentsArray.length;
+                console.log(chalk.greenBright.bold(`\n\t\t-::ACTIVE STUDENT-=(${chalk.greenBright(count)})=- BALANCE::-\n`));
+                console.log(chalk.hex("fc9d4e").bold(`\n\t   ID `)+': '+chalk.blue.bold(`Balance\n`));
+                studentsArray.forEach((element)=>{
+                    if(element.balance<10){
+                        console.log(`\t|${chalk.hex('fc9d4e').bold(element.id)} : $${chalk.blue(element.balance)}      |`)
+                    }else if(element.balance<100){
+                        console.log(`\t|${chalk.hex('fc9d4e').bold(element.id)} : $${chalk.blue(element.balance)}     |`)
+                    }else if(element.balance<1000){
+                        console.log(`\t|${chalk.hex('fc9d4e').bold(element.id)} : $${chalk.blue(element.balance)}    |`)
+                    }else if(element.balance<10000){
+                        console.log(`\t|${chalk.hex('fc9d4e').bold(element.id)} : $${chalk.blue(element.balance)}   |`)
+                    }else if(element.balance<100000){
+                        console.log(`\t|${chalk.hex('fc9d4e').bold(element.id)} : $${chalk.blue(element.balance)}  |`)
+                    }else if(element.balance<1000000){
+                        console.log(`\t|${chalk.hex('fc9d4e').bold(element.id)} : $${chalk.blue(element.balance)} |`)
+                    }
+                    })
+                    showAllStudents();
+            }else if(question.answer===chalk.red.bold(`←— Back to Others`)){
+                others();
+            }else{
+                let allarray:student[]=[...studentsArray,...deletedStudentsarray];
+                let count:number=allarray.length;
+                console.log(chalk.greenBright.bold(`\n\t\t-::ALL STUDENTS-=(${chalk.greenBright(count)})=- INFO ::-\n`));
+                console.log(chalk.blue.bold(`\t  ID   : `)+chalk.hex("fc9d4e").bold(`        NAME         : `)+chalk.blue.bold(`BALANCE  : COURSES`));
+                allarray.forEach((element)=>{
+                    if(element.name.length>0&&element.name.length<=6){
+                        if(element.balance<10){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}\t\t      : $${chalk.blue(element.balance)}       : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<100){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}\t\t      : $${chalk.blue(element.balance)}      : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<1000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}\t\t      : $${chalk.blue(element.balance)}     : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<10000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}\t\t      : $${chalk.blue(element.balance)}    : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<100000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}\t\t      : $${chalk.blue(element.balance)}   : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<1000000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}\t\t      : $${chalk.blue(element.balance)}  : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }
+                    }else if(element.name.length>6&&element.name.length<=14){
+                        if(element.balance<10){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}\t      : $${chalk.blue(element.balance)}       : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<100){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}\t      : $${chalk.blue(element.balance)}      : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<1000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}\t      : $${chalk.blue(element.balance)}     : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<10000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}\t      : $${chalk.blue(element.balance)}    : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<100000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}\t      : $${chalk.blue(element.balance)}   : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<1000000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}\t      : $${chalk.blue(element.balance)}  : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }
+                    }else if(element.name.length===15){
+                        if(element.balance<10){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}      : $${chalk.blue(element.balance)}       : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<100){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}      : $${chalk.blue(element.balance)}      : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<1000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}      : $${chalk.blue(element.balance)}     : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<10000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}      : $${chalk.blue(element.balance)}    : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<100000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}      : $${chalk.blue(element.balance)}   : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<1000000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}      : $${chalk.blue(element.balance)}  : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }
+                    }else if(element.name.length===16){
+                        if(element.balance<10){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}     : $${chalk.blue(element.balance)}       : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<100){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}     : $${chalk.blue(element.balance)}      : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<1000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}     : $${chalk.blue(element.balance)}     : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<10000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}     : $${chalk.blue(element.balance)}    : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<100000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}     : $${chalk.blue(element.balance)}   : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<1000000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}     : $${chalk.blue(element.balance)}  : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }
+                    }else if(element.name.length===17){
+                        if(element.balance<10){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}    : $${chalk.blue(element.balance)}       : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<100){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}    : $${chalk.blue(element.balance)}      : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<1000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}    : $${chalk.blue(element.balance)}     : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<10000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}    : $${chalk.blue(element.balance)}    : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<100000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}    : $${chalk.blue(element.balance)}   : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<1000000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}    : $${chalk.blue(element.balance)}  : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }
+                    }else if(element.name.length===18){
+                        if(element.balance<10){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}   : $${chalk.blue(element.balance)}       : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<100){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}   : $${chalk.blue(element.balance)}      : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<1000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}   : $${chalk.blue(element.balance)}     : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<10000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}   : $${chalk.blue(element.balance)}    : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<100000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}   : $${chalk.blue(element.balance)}   : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<1000000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}   : $${chalk.blue(element.balance)}  : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }
+                    }else if(element.name.length===19){
+                        if(element.balance<10){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}  : $${chalk.blue(element.balance)}       : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<100){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}  : $${chalk.blue(element.balance)}      : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<1000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}  : $${chalk.blue(element.balance)}     : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<10000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}  : $${chalk.blue(element.balance)}    : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<100000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}  : $${chalk.blue(element.balance)}   : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<1000000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)}  : $${chalk.blue(element.balance)}  : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }
+                    }else if(element.name.length===20){
+                        if(element.balance<10){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)} : $${chalk.blue(element.balance)}       : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<100){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)} : $${chalk.blue(element.balance)}      : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<1000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)} : $${chalk.blue(element.balance)}     : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<10000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)} : $${chalk.blue(element.balance)}    : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<100000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)} : $${chalk.blue(element.balance)}   : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }else if(element.balance<1000000){
+                            console.log(`\t|${chalk.blue(element.id)} : ${chalk.hex('fc9d4e').bold(element.name)} : $${chalk.blue(element.balance)}  : ${chalk.blue(element.courses,element.delcourses)}`)
+                        }
+                    }})
+                    showAllStudents();
+            };
         }
 };
 //status viewing options
@@ -495,13 +951,17 @@ async function showStudentStatus() {
         }
     ]);
     if(choose.option=== chalk.hex("#47FF75").bold(`Student Status(All Info)`)){
-        showStudentStatusall();
+        await showStudentStatusall();
+        showStudentStatus();
     }else if(choose.option=== chalk.hex("#178C1F ").bold(`Student Name`)){
-        viewStudentname();
+        await viewStudentname();
+        showStudentStatus();
     }else if(choose.option=== chalk.hex("#46579B").bold(`Student Balance`)){
-        viewStudentBalance();
+        await viewStudentBalance();
+        showStudentStatus();
     }else if(choose.option=== chalk.hex("#688D84 ").bold(`Student Courses`)){
-        viewStudentCourses();
+        await viewStudentCourses();
+        showStudentStatus();
     }else if(choose.option=== chalk.hex("#880718").bold(`←— Back to Main Menu`)){
         main();
     }
@@ -523,7 +983,6 @@ async function viewStudentname(){
                 console.log(`+——————————————————————————————————————+`)
             }});
         }else{console.log(condition)};
-    showStudentStatus();
 };
 async function viewStudentCourses(){
     let student_info= await inquirer.prompt([
@@ -543,7 +1002,6 @@ async function viewStudentCourses(){
 
             }});
         }else{console.log(condition)};
-    showStudentStatus();
 };
 async function showStudentStatusall(){
     let student_info= await inquirer.prompt([
@@ -560,7 +1018,6 @@ async function showStudentStatusall(){
                 element.display_status();
             }});
         }else{console.log(condition)}
-        showStudentStatus();
 }
 async function viewStudentBalance(){
     let student_info= await inquirer.prompt([
@@ -577,7 +1034,6 @@ async function viewStudentBalance(){
                 element.view_balance();
             }});
         }else{console.log(condition)};
-    showStudentStatus();
 };
 
 

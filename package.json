@@ -1,6 +1,6 @@
 {
-  "name": "student-management-system",
-  "version": "1.0.0",
+  "name": "mustafa-student-management-system",
+  "version": "1.0.1",
   "main": "index.js",
   "type": "module",
   "scripts": {
