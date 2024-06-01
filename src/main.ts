@@ -50,8 +50,8 @@ class student{
             console.log(chalk.redBright(`\t+——————————————————————————————————————————————————————+\n\t|    Student Name Cannot Be Renamed To Current Name    |\n\t+——————————————————————————————————————————————————————+\t\n`))
         }else if(this.balance>=namechangefees){
             this.balance-=namechangefees;
-            this.name=name;
             console.log(`◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦\n\n\t${chalk.hex('46579B').bold(this.name)}${chalk.hex('#fc9d4e')(` Successfully Changed To ${chalk.yellowBright.bold(name)} With Fee $${chalk.greenBright(namechangefees)}`)}\n\n◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦`);
+            this.name=name;
         }else{
             console.log(chalk.redBright(`\t+———————————————————————————————————————————————————————————————+\n\t|    Student Dosen't have the Amount Required to Change Name    |\n\t+———————————————————————————————————————————————————————————————+\t\n`))
         }
@@ -94,7 +94,7 @@ class student{
         if(this.balance>=enrollementfees){
             this.balance-=enrollementfees;
             this.courses.push(...course)
-            console.log(`◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦\n\n\t${chalk.hex('46579B').bold(this.name)}${chalk.hex('#fc9d4e')(` Successfully Enrolled in ${chalk.yellowBright.bold(...course)} with Fee &${chalk.green(enrollementfees)}`)}\n\n◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦`)
+            console.log(`◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦\n\n\t${chalk.hex('46579B').bold(this.name)}${chalk.hex('#fc9d4e')(` Successfully Enrolled in ${chalk.yellowBright.bold(...course)} with Fee $${chalk.green(enrollementfees)}`)}\n\n◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦◦`)
         }else{
             console.log(chalk.redBright(`\t+——————————————————————————————————————————————————————————+\n\t|    Student Dosen't have the Amount Required to Enroll    |\n\t+——————————————————————————————————————————————————————————+\t\n`))
         }
@@ -471,7 +471,7 @@ async function changeName(){
             }});
         }else{console.log(condition)};
             };
-        }
+}
 async function addBalance(){
     let student_info= await inquirer.prompt([
         {
